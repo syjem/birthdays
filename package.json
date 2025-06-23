@@ -1,0 +1,15 @@
+{
+  "engines": {
+    "node": "18.x"
+  },
+  "dependencies": {
+    "tailwindcss": "^4.1.10"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.10",
+    "@tailwindcss/postcss": "^4.1.10",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "postcss-cli": "^11.0.1"
+  }
+}

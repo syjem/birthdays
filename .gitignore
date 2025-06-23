@@ -1,0 +1,11 @@
+.venv/
+node_modules/
+__pycache__/
+flask_session/
+migrations/
+.flaskenv
+.env
+*.log
+*.pyc
+*.cpython
+*.sql

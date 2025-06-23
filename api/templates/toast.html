@@ -1,0 +1,70 @@
+<!-- Flash message display -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div id="toast" class="fixed top-5 right-5 z-[100] flex flex-col gap-2 opacity-0 -translate-y-10 
+                      transition-all duration-300 ease-in-out w-full max-w-sm text-gray-500 bg-white rounded-lg shadow-md" role="alert">
+            {% for category, message in messages %}
+                <div class="border text-sm p-4 flex items-center rounded-lg
+                            {% if category == 'success' %}
+                                text-green-800 border-green-300 bg-green-50
+                            {% elif category == 'error' %}
+                                text-red-800 border-red-300 bg-red-50
+                            {% elif category == 'info' %}
+                                text-blue-800 border-blue-300 bg-blue-50
+                            {% elif category == 'warning' %}
+                                text-yellow-800 border-yellow-300 bg-yellow-50
+                            {% else %}
+                                text-gray-800 border-gray-300 bg-gray-50
+                            {% endif %}
+                           ">
+                    <svg class="shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                    </svg>
+                    <span class="sr-only">{{ category }}</span>
+                    <span class="font-medium">{{ message }}!</span>
+                </div>
+            {% endfor %}
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const toast = document.getElementById('toast');
+                let closeTimeout;
+
+                const showToast = () => {
+                    toast.classList.remove('opacity-0', '-translate-y-10');
+                    toast.classList.add(
+                        'opacity-100',
+                        'translate-y-0',
+                        'transition-transform',
+                        'duration-300',
+                        'ease-in-out'
+                    );
+                };
+
+                const hideToast = () => {
+                    toast.classList.add('opacity-0', 'transition-opacity', 'duration-300');
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 300);
+                };
+
+                // Show the toast after loading
+                setTimeout(showToast, 100);
+
+                // Set a close timeout but store it to clear on hover
+                closeTimeout = setTimeout(hideToast, 5000);
+
+                // Pause the close timer on hover
+                toast.addEventListener('mouseenter', () => {
+                    clearTimeout(closeTimeout);
+                });
+
+                // Resume the close timer when mouse leaves
+                toast.addEventListener('mouseleave', () => {
+                    closeTimeout = setTimeout(hideToast, 2000);
+                });
+            });
+        </script>
+    {% endif %}
+
+{% endwith %}
