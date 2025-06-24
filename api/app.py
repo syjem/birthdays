@@ -1,3 +1,5 @@
+import os
+import sys
 from cs50 import SQL
 from flask import Flask, flash, redirect, render_template, request, url_for
 
@@ -8,8 +10,22 @@ app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SECRET_KEY"] = 'C1lrw@M=YGMk+-e#'
 
+if sys.platform == "win32":
+    db_path = "birthdays.db"  
+else:
+    db_path = "/tmp/birthdays.db"  
+
 # Configure CS50 Library to use SQLite database
-db = SQL("sqlite:////tmp/birthdays.db")
+db = SQL(f"sqlite:///{db_path}")
+
+db.execute("""
+    CREATE TABLE IF NOT EXISTS birthdays (
+        id INTEGER,
+        name TEXT NOT NULL,
+        date TEXT,
+        PRIMARY KEY(id)
+    )
+""")
 
 
 @app.after_request
