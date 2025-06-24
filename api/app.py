@@ -10,16 +10,8 @@ app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SECRET_KEY"] = 'C1lrw@M=YGMk+-e#'
 
-if not os.path.exists("/tmp"):
-    os.makedirs("/tmp")
-    
-if sys.platform == "win32":
-    db_path = "birthdays.db"  
-else:
-    db_path = "/tmp/birthdays.db"  
-
 # Configure CS50 Library to use SQLite database
-db = SQL(f"sqlite:///{db_path}")
+db = SQL("sqlite:///tmp/birthdays.db")
 
 db.execute("""
     CREATE TABLE IF NOT EXISTS birthdays (
