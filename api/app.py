@@ -10,6 +10,9 @@ app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SECRET_KEY"] = 'C1lrw@M=YGMk+-e#'
 
+if not os.path.exists("/tmp"):
+    os.makedirs("/tmp")
+    
 if sys.platform == "win32":
     db_path = "birthdays.db"  
 else:
