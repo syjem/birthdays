@@ -1,7 +1,7 @@
-from flask import Flask, flash, g, redirect, render_template, request, url_for
+from flask import Flask, flash, redirect, render_template, request, url_for
 
 from configs import Config
-from db_helpers import close_db, run_query, run_exec
+from helpers import close_db, run_query, run_exec
 
 
 # Configure application

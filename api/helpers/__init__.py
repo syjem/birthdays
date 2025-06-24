@@ -1,5 +1,5 @@
 import sqlitecloud
-import sqlite3  # Only for using quote() safely
+import sqlite3
 from flask import g
 from configs import Config
 
