@@ -1,27 +1,14 @@
-import os
-import sys
-from cs50 import SQL
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import Flask, flash, g, redirect, render_template, request, url_for
+
+from configs import Config
+from db_helpers import close_db, run_query, run_exec
+
 
 # Configure application
 app = Flask(__name__)  
+app.config.from_object(Config)
 
-# Ensure templates are auto-reloaded
-app.config["TEMPLATES_AUTO_RELOAD"] = True
-app.config["SECRET_KEY"] = 'C1lrw@M=YGMk+-e#'
-
-# Configure CS50 Library to use SQLite database
-db = SQL("sqlite:///tmp/birthdays.db")
-
-db.execute("""
-    CREATE TABLE IF NOT EXISTS birthdays (
-        id INTEGER,
-        name TEXT NOT NULL,
-        date TEXT,
-        PRIMARY KEY(id)
-    )
-""")
-
+app.teardown_appcontext(close_db)
 
 @app.after_request
 def after_request(response):
@@ -35,7 +22,7 @@ def after_request(response):
 @app.route("/", methods=["GET", "POST"])
 def index():
 
-    birthdays = db.execute("SELECT * FROM birthdays;")
+    birthdays = run_query("SELECT * FROM birthdays")
 
     if request.method == "POST":
         name = request.form.get("name")
@@ -46,13 +33,13 @@ def index():
             return render_template("index.html", error=error, birthdays=birthdays)
 
         # Check if the name already exists in the database
-        existing = db.execute("SELECT 1 FROM birthdays WHERE name=?", name)
+        existing = run_query("SELECT 1 FROM birthdays WHERE name = {} AND date = {}", name, date)
 
         if existing:
-            error = f"{name}'s birthday is already on the database."
+            error = f"{name}'s birthday is already in the database."
             return render_template("index.html", error=error, birthdays=birthdays)
 
-        db.execute("INSERT INTO birthdays (name, date) VALUES(?, ?)", name, date)
+        run_exec("INSERT INTO birthdays (name, date) VALUES({}, {})", name, date)
         flash("Birthday added successfully", "success")
         return redirect(url_for("index"))
 
@@ -64,12 +51,12 @@ def update(id):
     if request.method == "POST":
         name = request.form.get("name")
         date = request.form.get("date")
-
-        db.execute("UPDATE birthdays SET name = ?, date = ? WHERE id = ?", name, date, id)
+        
+        run_exec("UPDATE birthdays SET name = {}, date = {} WHERE id = {}", name, date, id)
         flash("Updated successfully", "info")
         return redirect(url_for("index"))
 
-    row = db.execute("SELECT * FROM birthdays WHERE id = ?", id)
+    row = run_query("SELECT * FROM birthdays WHERE id = {}", id)
 
     if not row:
         flash("Birthday not found", "error")
@@ -83,6 +70,6 @@ def update(id):
 
 @app.route('/delete/<int:id>', methods=['GET'])
 def delete(id):
-    db.execute("DELETE FROM birthdays WHERE id = ?", id)
+    run_exec("DELETE FROM birthdays WHERE id = {}", id)
     flash("Deleted", "warning")
     return redirect(url_for("index"))
