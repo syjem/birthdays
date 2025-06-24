@@ -9,7 +9,7 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SECRET_KEY"] = 'C1lrw@M=YGMk+-e#'
 
 # Configure CS50 Library to use SQLite database
-db = SQL("sqlite:///birthdays.db")
+db = SQL("sqlite:////tmp/birthdays.db")
 
 
 @app.after_request
