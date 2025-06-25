@@ -71,5 +71,5 @@ def update(id):
 @app.route('/delete/<int:id>', methods=['GET'])
 def delete(id):
     run_exec("DELETE FROM birthdays WHERE id = {}", id)
-    flash("Deleted", "warning")
+    flash("Entry was deleted", "warning")
     return redirect(url_for("index"))
