@@ -1,3 +1,4 @@
+from datetime import datetime, date
 import sqlitecloud
 import sqlite3
 from flask import g
@@ -36,3 +37,40 @@ def run_exec(query_template, *params):
     conn = get_db()
     conn.execute(query)
     conn.commit()
+
+def format_date(date_str):
+    """Format date string to readable format"""
+    try:
+        date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+        return date_obj.strftime('%B %d, %Y')
+    except:
+        return date_str
+    
+
+def get_days_until(birthday_str):
+    """Calculate days until next birthday"""
+    try:
+        birthday = datetime.strptime(birthday_str, '%Y-%m-%d').date()
+        today = date.today()
+        
+        # Get this year's birthday
+        this_year_birthday = birthday.replace(year=today.year)
+        
+        # If birthday has passed this year, get next year's
+        if this_year_birthday < today:
+            next_birthday = birthday.replace(year=today.year + 1)
+        else:
+            next_birthday = this_year_birthday
+            
+        days_until = (next_birthday - today).days
+        
+        if days_until == 0:
+            return "🎉 Today!"
+        elif days_until == 1:
+            return "🎂 Tomorrow!"
+        elif days_until <= 7:
+            return f"🎈 In {days_until} days"
+        else:
+            return f"In {days_until} days"
+    except:
+        return "Invalid date"

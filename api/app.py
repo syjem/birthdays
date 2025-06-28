@@ -1,10 +1,9 @@
 from flask import Flask, flash, redirect, render_template, request, url_for
 
 from configs import Config
-from helpers import close_db, run_query, run_exec
+from helpers import close_db, run_query, run_exec, format_date, get_days_until
 
 
-# Configure application
 app = Flask(__name__)  
 app.config.from_object(Config)
 
@@ -21,27 +20,30 @@ def after_request(response):
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-
-    birthdays = run_query("SELECT * FROM birthdays")
-
     if request.method == "POST":
         name = request.form.get("name")
-        date = request.form.get("date")
+        birthday_date = request.form.get("birthday")
 
-        if not name or not date:
-            error = "Please, complete the form."
-            return render_template("index.html", error=error, birthdays=birthdays)
+        if not name or not birthday_date:
+            flash("Please complete the form.", "error")
+            return redirect(url_for("index"))
 
-        # Check if the name already exists in the database
-        existing = run_query("SELECT 1 FROM birthdays WHERE name = {} AND date = {}", name, date)
+        # Check if the name and date combination already exists
+        existing = run_query("SELECT 1 FROM birthdays WHERE name = {} AND date = {}", name, birthday_date)
 
         if existing:
-            error = f"{name}'s birthday is already in the database."
-            return render_template("index.html", error=error, birthdays=birthdays)
+            flash(f"This birthday is already in the database.", "error")
+            return redirect(url_for("index"))
 
-        run_exec("INSERT INTO birthdays (name, date) VALUES({}, {})", name, date)
-        flash("Birthday added successfully", "success")
+        run_exec("INSERT INTO birthdays (name, date) VALUES({}, {})", name, birthday_date)
+        flash("Birthday added successfully! 🎉", "success")
         return redirect(url_for("index"))
+
+
+    birthdays = run_query("SELECT * FROM birthdays")
+    for birthday in birthdays:
+        birthday['formatted_date'] = format_date(birthday['date'])
+        birthday['days_until'] = get_days_until(birthday['date'])
 
     return render_template("index.html", birthdays=birthdays)
 
@@ -50,10 +52,10 @@ def index():
 def update(id):
     if request.method == "POST":
         name = request.form.get("name")
-        date = request.form.get("date")
+        birthday_date = request.form.get("birthday")
         
-        run_exec("UPDATE birthdays SET name = {}, date = {} WHERE id = {}", name, date, id)
-        flash("Updated successfully", "info")
+        run_exec("UPDATE birthdays SET name = {}, date = {} WHERE id = {}", name, birthday_date, id)
+        flash("Birthday updated successfully! ✨", "success")
         return redirect(url_for("index"))
 
     row = run_query("SELECT * FROM birthdays WHERE id = {}", id)
@@ -62,14 +64,19 @@ def update(id):
         flash("Birthday not found", "error")
         return redirect(url_for("index"))
 
-    name = row[0]["name"]
-    date = row[0]["date"]
+    birthday = row[0]
 
-    return render_template("update.html", id=id, name=name, date=date)
+    return render_template("update.html", birthday=birthday)
 
 
 @app.route('/delete/<int:id>', methods=['GET'])
 def delete(id):
-    run_exec("DELETE FROM birthdays WHERE id = {}", id)
-    flash("Entry was deleted", "warning")
+    existing = run_query("SELECT name FROM birthdays WHERE id = {}", id)
+    
+    if not existing:
+        flash("Birthday not found.", "error")
+    else:
+        run_exec("DELETE FROM birthdays WHERE id = {}", id)
+        flash(f"Birthday deleted successfully!", "error")
+    
     return redirect(url_for("index"))
