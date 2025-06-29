@@ -38,6 +38,14 @@ def run_exec(query_template, *params):
     conn.execute(query)
     conn.commit()
 
+def get_age(birthday_str):
+    birth_date = datetime.strptime(birthday_str, "%Y-%m-%d").date()
+    today = date.today()
+
+    age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+    return age
+
+
 def format_date(date_str):
     """Format date string to readable format"""
     try:

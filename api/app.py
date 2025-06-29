@@ -1,7 +1,7 @@
 from flask import Flask, flash, redirect, render_template, request, url_for
 
 from configs import Config
-from helpers import close_db, run_query, run_exec, format_date, get_days_until
+from helpers import close_db, run_query, run_exec, format_date, get_age, get_days_until
 
 
 app = Flask(__name__)  
@@ -44,6 +44,7 @@ def index():
     for birthday in birthdays:
         birthday['formatted_date'] = format_date(birthday['date'])
         birthday['days_until'] = get_days_until(birthday['date'])
+        birthday['age'] = get_age(birthday['date'])
 
     return render_template("index.html", birthdays=birthdays)
 
@@ -61,7 +62,7 @@ def update(id):
     row = run_query("SELECT * FROM birthdays WHERE id = {}", id)
 
     if not row:
-        flash("Birthday not found", "error")
+        flash("Birthday not found.", "error")
         return redirect(url_for("index"))
 
     birthday = row[0]
