@@ -1,60 +1,62 @@
 <!-- Flash message display -->
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-        <div id="toast" class="fixed top-4 right-4 z-50 flex flex-col gap-2 w-full max-w-sm text-white rounded-lg shadow-lg animate-slide-up backdrop-blur-sm">
-            {% for category, message in messages %}
-                <div class="toast-item px-6 py-3 rounded-lg shadow-md text-sm flex items-center gap-2
-                            {% if category == 'success' %}
-                                bg-gradient-to-r from-green-700 to-emerald-800
-                            {% elif category == 'error' %}
-                                bg-gradient-to-r from-red-700 to-red-800
-                            {% elif category == 'info' %}
-                                bg-gradient-to-r from-blue-700 to-cyan-800
-                            {% elif category == 'warning' %}
-                                bg-gradient-to-r from-yellow-700 to-yellow-800 text-black
-                            {% else %}
-                                bg-gradient-to-r from-gray-700 to-gray-800
-                            {% endif %}
-                           ">
-                    <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
-                    </svg>
-                    <span>{{ message }}</span>
-                </div>
-            {% endfor %}
-        </div>
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                const toastContainer = document.getElementById('toast');
-                const toasts = toastContainer.querySelectorAll('.toast-item');
+        <div class="fixed top-4 left-1/2 md:left-auto md:right-4 -translate-x-1/2 md:translate-x-0 z-50 w-full flex justify-center md:justify-end">
+            <div id="toast" class="w-[95%] md:w-full max-w-sm flex flex-col gap-2 text-white rounded-lg shadow-lg animate-slide-up backdrop-blur-sm">
+                {% for category, message in messages %}
+                    <div class="toast-item px-6 py-4 rounded-lg shadow-md text-sm flex items-center gap-2
+                                {% if category == 'success' %}
+                                    bg-gradient-to-r from-green-700 to-emerald-800
+                                {% elif category == 'error' %}
+                                    bg-gradient-to-r from-red-700 to-red-800
+                                {% elif category == 'info' %}
+                                    bg-gradient-to-r from-blue-700 to-cyan-800
+                                {% elif category == 'warning' %}
+                                    bg-gradient-to-r from-yellow-700 to-yellow-800 text-black
+                                {% else %}
+                                    bg-gradient-to-r from-gray-700 to-gray-800
+                                {% endif %}
+                            ">
+                        <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                        </svg>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const toastContainer = document.getElementById('toast');
+                    const toasts = toastContainer.querySelectorAll('.toast-item');
 
-                toasts.forEach((toast) => {
-                    let hideTimeout;
+                    toasts.forEach((toast) => {
+                        let hideTimeout;
 
-            // Auto-hide after 3 seconds
-                    hideTimeout = setTimeout(() => {
-                        toast.classList.add('transition', 'duration-300');
-                        toast.classList.remove('animate-fade-in');
-                        toast.style.transform = 'translateX(100%)';
-                        toast.style.opacity = '0';
-                        setTimeout(() => toast.remove(), 300);
-                    }, 3000);
-
-            // Pause on hover
-                    toast.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
-
-            // Resume timer on leave
-                    toast.addEventListener('mouseleave', () => {
+                // Auto-hide after 3 seconds
                         hideTimeout = setTimeout(() => {
                             toast.classList.add('transition', 'duration-300');
                             toast.classList.remove('animate-fade-in');
                             toast.style.transform = 'translateX(100%)';
                             toast.style.opacity = '0';
                             setTimeout(() => toast.remove(), 300);
-                        }, 2000);
+                        }, 3000);
+
+                // Pause on hover
+                        toast.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
+
+                // Resume timer on leave
+                        toast.addEventListener('mouseleave', () => {
+                            hideTimeout = setTimeout(() => {
+                                toast.classList.add('transition', 'duration-300');
+                                toast.classList.remove('animate-fade-in');
+                                toast.style.transform = 'translateX(100%)';
+                                toast.style.opacity = '0';
+                                setTimeout(() => toast.remove(), 300);
+                            }, 2000);
+                        });
                     });
                 });
-            });
-        </script>
+            </script>
+        </div>
     {% endif %}
 {% endwith %}
