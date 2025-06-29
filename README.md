@@ -1,6 +1,5 @@
 # Birthdays
-
-A simple CRUD application lets you add, update, and delete birthdays to a SQLite cloud database.
+Flask CRUD application that lets you add, update, and delete birthdays to a SQLite cloud database.
 
 #### Built with
 
@@ -10,7 +9,7 @@ A simple CRUD application lets you add, update, and delete birthdays to a SQLite
 - Python/Flask
 - SQLiteCloud
 
-#### Deployment/Production
+#### Deployment
 
 - Vercel
 
